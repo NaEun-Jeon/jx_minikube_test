@@ -4,6 +4,7 @@ metadata:
   labels:
     app: jx-boot
     jenkins-x.io/kind: jx-git-operator
+  namespace: jx
 spec:
   backoffLimit: 4
   completions: 1
@@ -16,49 +17,55 @@ spec:
         jenkins-x.io/kind: jx-git-operator
     spec:
       initContainers:
-        - args:
-            - gitops
-            - git
-            - clone
-          command:
-            - jx
-          env:
-            - name: XDG_CONFIG_HOME
-              value: /workspace/xdg_config
-          envFrom:
-            - secretRef:
-                name: jx-boot-job-env-vars
-                optional: true
-          image: ghcr.io/jenkins-x/jx-boot:3.10.83
-          name: git-clone
-          volumeMounts:
-            - mountPath: /workspace
-              name: workspace-volume
-          workingDir: /workspace
+      - args:
+        - gitops
+        - git
+        - clone
+        command:
+        - jx
+        env:
+        - name: XDG_CONFIG_HOME
+          value: /workspace/xdg_config
+        envFrom:
+        - secretRef:
+            name: jx-boot-job-env-vars
+            optional: true
+        image: ghcr.io/jenkins-x/jx-boot:3.10.83
+        name: git-clone
+        volumeMounts:
+        - mountPath: /workspace
+          name: workspace-volume
+        workingDir: /workspace
       containers:
-        - args:
-            - apply
-          command:
-            - make
-          env:
-            - name: XDG_CONFIG_HOME
-              value: /workspace/xdg_config
-          envFrom:
-            - secretRef:
-                name: jx-boot-job-env-vars
-                optional: true
-          image: ghcr.io/jenkins-x/jx-boot:3.10.83
-          imagePullPolicy: Always
-          name: job
-          volumeMounts:
-            - mountPath: /workspace
-              name: workspace-volume
-          workingDir: /workspace/source
-      dnsPolicy: ClusterFirst
+      - args:
+        - apply
+        command:
+        - make
+        env:
+        - name: XDG_CONFIG_HOME
+          value: /workspace/xdg_config
+        envFrom:
+        - secretRef:
+            name: jx-boot-job-env-vars
+            optional: true
+        image: ghcr.io/jenkins-x/jx-boot:3.10.83
+        imagePullPolicy: Always
+        name: job
+        volumeMounts:
+        - mountPath: /workspace
+          name: workspace-volume
+        workingDir: /workspace/source
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+        options:
+          - name: ndots
+            value: "1"
       restartPolicy: Never
       schedulerName: default-scheduler
       serviceAccountName: jx-boot-job
       terminationGracePeriodSeconds: 30
       volumes:
-        - name: workspace-volume
-          emptyDir: {}
+      - name: workspace-volume
+        emptyDir: {}

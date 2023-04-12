@@ -2,6 +2,7 @@ apiVersion: project.jenkins-x.io/v1alpha1
 kind: PipelineCatalog
 metadata:
   creationTimestamp: null
+  namespace: jx
 spec:
   repositories:
   - gitRef: d31b9d7e1c985df49414a9c38f57a4948edd877a

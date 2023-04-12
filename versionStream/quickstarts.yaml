@@ -102,3 +102,5 @@ spec:
     language: Java
     name: vertx-rest-prometheus
     version: 1.0.0+fd180fd76
+metadata:
+  namespace: jx
